@@ -10,6 +10,7 @@ pool:
 
 variables:
   location: 'westus3'
+  vmSku: 'Standard_B2s'  # 🔁 Se der SkuNotAvailable, troque o tamanho (ex.: Standard_D2as_v5) ou a região
   resourceGroupName: 'rg-iac-web-iis'
   vmName: 'vm-iac-web-iis'
   templateFile: 'vm-iis-template.json'
@@ -44,6 +45,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'arm-templates/vm-iis-template.json'
         csmParametersFile: 'arm-templates/vm-iis-parameters.json'
+        overrideParameters: '-location $(location) -vmSku $(vmSku)'
         deploymentMode: 'Incremental'
         deploymentName: 'vm-iis-deployment'
 
