@@ -9,8 +9,9 @@ pool:
   #vmImage: 'windows-latest'
 
 variables:
-  location: 'centralindia'  # Central India (Asia Pacific)
-  vmSku: 'Standard_D2s_v3'  # 2 vCPU, 8 GiB
+  location: 'westus2'  # West US 2
+  vmSku: 'Standard_B2ls_v2'  # 2 vCPUs, 4 GiB
+  windowsOSVersion: '2025-datacenter-azure-edition'  # Windows Server 2025 Datacenter Azure Edition
   resourceGroupName: 'rg-iac-web-iis'
   vmName: 'vm-iac-web-iis'
   templateFile: 'vm-iis-template.json'
@@ -50,7 +51,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'arm-templates/vm-iis-template.json'
         csmParametersFile: 'arm-templates/vm-iis-parameters.json'
-        overrideParameters: '-location $(location) -vmSku $(vmSku)'
+        overrideParameters: '-location $(location) -vmSku $(vmSku) -windowsOSVersion $(windowsOSVersion)'
         deploymentMode: 'Incremental'
         deploymentName: 'vm-iis-deployment'
 
