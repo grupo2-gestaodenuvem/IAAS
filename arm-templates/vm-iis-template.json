@@ -23,7 +23,7 @@
     },
     "windowsOSVersion": {
       "type": "string",
-      "defaultValue": "2019-Datacenter"
+      "defaultValue": "2025-datacenter-azure-edition"
     },
     "publicIpSku": {
       "type": "string",
@@ -217,3 +217,4 @@
     }
   }
 }
+
