@@ -16,8 +16,10 @@ variables:
   vmName: 'vm-iac-web-iis'
   templateFile: 'vm-iis-template.json'
   parametersFile: 'vm-iis-parameters.json'
-  indexUrl: 'https://raw.githubusercontent.com/profll001/IAAS/refs/heads/main/src/index.html'
-  scriptUrl: 'https://raw.githubusercontent.com/profll001/IAAS/refs/heads/main/src/scripts/site.ps1'
+  # URLs montadas a partir do próprio repositório GitHub onde está este pipeline (owner/repo + branch)
+  repoRawUrl: 'https://raw.githubusercontent.com/$(Build.Repository.Name)/$(Build.SourceBranch)'
+  indexUrl: '$(repoRawUrl)/src/index.html'
+  scriptUrl: '$(repoRawUrl)/src/scripts/site.ps1'
 
 stages:
 - stage: DeployInfra
@@ -72,10 +74,14 @@ stages:
           $vmName = '$(vmName)'
           $resourceGroup = '$(resourceGroupName)'
           $scriptUrl = '$(scriptUrl)'
+          $indexUrl = '$(indexUrl)'
+          Write-Host "Script: $scriptUrl"
+          Write-Host "Index : $indexUrl"
 
           # Define o conteúdo JSON como um objeto PowerShell
+          # (baixa o site.ps1 e o index.html do repositório para a mesma pasta na VM)
           $settings = @{
-            fileUris = @($scriptUrl)
+            fileUris = @($scriptUrl, $indexUrl)
             commandToExecute = "powershell -ExecutionPolicy Unrestricted -File site.ps1"
           }
 
@@ -84,10 +90,14 @@ stages:
           $settings | ConvertTo-Json -Depth 3 | Out-File -FilePath $jsonFile -Encoding ascii
 
           # Executa a extensão passando o caminho do arquivo JSON
+          # A VM só aceita uma CustomScriptExtension: reutiliza a instância 'InstallIIS' criada pelo ARM template
+          # --force-update garante nova execução mesmo que as configurações não tenham mudado
           az vm extension set `
             --resource-group $resourceGroup `
             --vm-name $vmName `
             --name CustomScriptExtension `
             --publisher Microsoft.Compute `
+            --extension-instance-name InstallIIS `
+            --force-update `
             --settings @$jsonFile # Usa @ para indicar que é um caminho de arquivo
   # fim
