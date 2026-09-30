@@ -9,7 +9,7 @@
             "value": "vm-iac-web-iis"
         },
         "location": {
-            "value": "westus3"
+            "value": "centralindia"
         },
         "adminUsername": {
             "value": "iacadmin"
@@ -21,7 +21,7 @@
             "value": "Standard_B2s"
         },
         "windowsOSVersion": {
-            "value": "2022-datacenter-azure-edition"
+            "value": "2025-datacenter-azure-edition"
         }
     }
 }
