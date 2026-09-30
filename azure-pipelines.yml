@@ -9,8 +9,8 @@ pool:
   #vmImage: 'windows-latest'
 
 variables:
-  location: 'westus3'
-  vmSku: 'Standard_B2s'  # 🔁 Se der SkuNotAvailable, troque o tamanho (ex.: Standard_D2as_v5) ou a região
+  location: 'centralindia'  # Central India (Asia Pacific)
+  vmSku: 'Standard_D2s_v3'  # 2 vCPU, 8 GiB
   resourceGroupName: 'rg-iac-web-iis'
   vmName: 'vm-iac-web-iis'
   templateFile: 'vm-iis-template.json'
@@ -32,7 +32,12 @@ stages:
         scriptType: 'ps'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az group create --name $(resourceGroupName) --location $(location)
+          # Cria o RG apenas se ainda não existir (um RG existente em outra região faria o 'az group create' falhar)
+          if ((az group exists --name $(resourceGroupName)) -eq 'false') {
+            az group create --name $(resourceGroupName) --location $(location)
+          } else {
+            Write-Host 'Resource Group $(resourceGroupName) já existe - os recursos serão criados em $(location).'
+          }
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy ARM Template'
